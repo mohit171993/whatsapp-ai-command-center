@@ -23,11 +23,6 @@ def health():
     return {"ok":True,"service":"whatsapp-ai-command-center","model":MODEL,"ai_configured":bool(client),"whatsapp_configured":bool(WA_TOKEN and PHONE_ID),"owner_configured":bool(OWNER)}
 
 @app.get("/webhook",response_class=PlainTextResponse)
-def verify_webhook(hub_mode:str|None=None,hub_verify_token:str|None=None,hub_challenge:str|None=None):
-    # FastAPI converts underscores, Meta sends hub.mode/hub.verify_token/hub.challenge; parse manually in middleware route below is safer.
-    raise HTTPException(400,"Use Meta query parameters")
-
-@app.api_route("/webhook",methods=["GET"],include_in_schema=False)
 async def verify_meta(request:Request):
     q=request.query_params
     if q.get("hub.mode")=="subscribe" and VERIFY_TOKEN and hmac.compare_digest(q.get("hub.verify_token",""),VERIFY_TOKEN):
